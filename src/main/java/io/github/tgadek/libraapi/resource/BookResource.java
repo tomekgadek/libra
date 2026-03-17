@@ -37,19 +37,19 @@ public class BookResource {
     @GetMapping
     public ResponseEntity<Page<Book>> getBooks(@RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
-        return ResponseEntity.ok().body(bookService.getAllBooks(page, size));
+        return ResponseEntity.ok(bookService.getAllBooks(page, size));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBook(@PathVariable(value = "id") String id) {
-        return ResponseEntity.ok().body(bookService.getBook(id));
+        return ResponseEntity.ok(bookService.getBook(id));
     }
 
     @PutMapping("/cover")
     public ResponseEntity<Map<String, String>> uploadCover(@RequestParam(value = "id") String id,
             @RequestParam(value = "file") MultipartFile file) {
 
-        return ResponseEntity.ok().body(Map.of("coverUrl", bookService.uploadCover(id, file)));
+        return ResponseEntity.ok(Map.of("coverUrl", bookService.uploadCover(id, file)));
     }
 
     @GetMapping(path = "/image/{filename}", produces = { IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE })

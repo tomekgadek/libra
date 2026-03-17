@@ -2,6 +2,7 @@ package io.github.tgadek.libraapi.service;
 
 import io.github.tgadek.libraapi.domain.Book;
 import io.github.tgadek.libraapi.repo.BookRepo;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import static io.github.tgadek.libraapi.constant.Constant.PHOTO_DIRECTORY;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -31,6 +30,29 @@ public class BookServiceImpl implements BookService {
 
     public BookServiceImpl(BookRepo bookRepo) {
         this.bookRepo = bookRepo;
+    }
+
+    @PostConstruct
+    public void seedData() {
+        if (bookRepo.count() == 0) {
+            log.info("Seeding initial book data using Builder");
+            bookRepo.save(Book.builder()
+                    .title("The Clean Coder")
+                    .author("Robert C. Martin")
+                    .isbn("978-0137081073")
+                    .publisher("Prentice Hall")
+                    .publishingYear("2011")
+                    .status("Available")
+                    .build());
+            bookRepo.save(Book.builder()
+                    .title("Clean Architecture")
+                    .author("Robert C. Martin")
+                    .isbn("978-0134494166")
+                    .publisher("Prentice Hall")
+                    .publishingYear("2017")
+                    .status("Available")
+                    .build());
+        }
     }
 
     @Override
@@ -58,21 +80,25 @@ public class BookServiceImpl implements BookService {
         log.info("Saving picture for book ID: {}", id);
 
         Book book = getBook(id);
-        String coverUrl = photoFunction.apply(id, file);
-        book.setCoverUrl(coverUrl);
-        bookRepo.save(book);
+        String coverUrl = savePhoto(id, file);
+        Book updatedBook = Book.builder()
+                .fromPrototype(book)
+                .coverUrl(coverUrl)
+                .build();
+        bookRepo.save(updatedBook);
 
         return coverUrl;
     }
 
-    private final Function<String, String> fileExtension = filename -> Optional.of(filename)
-            .filter(name -> name.contains("."))
-            .map(name -> name.substring(name.lastIndexOf(".")))
-            .orElse(".png");
+    private String getFileExtension(String filename) {
+        return Optional.ofNullable(filename)
+                .filter(name -> name.contains("."))
+                .map(name -> name.substring(name.lastIndexOf(".")))
+                .orElse(".png");
+    }
 
-    private final BiFunction<String, MultipartFile, String> photoFunction = (id, image) -> {
-
-        String filename = id + fileExtension.apply(image.getOriginalFilename());
+    private String savePhoto(String id, MultipartFile file) {
+        String filename = id + getFileExtension(file.getOriginalFilename());
 
         try {
             Path fileStorageLocation = Paths.get(PHOTO_DIRECTORY).toAbsolutePath().normalize();
@@ -81,7 +107,7 @@ public class BookServiceImpl implements BookService {
                 Files.createDirectories(fileStorageLocation);
             }
 
-            Files.copy(image.getInputStream(), fileStorageLocation.resolve(filename), REPLACE_EXISTING);
+            Files.copy(file.getInputStream(), fileStorageLocation.resolve(filename), REPLACE_EXISTING);
 
             return ServletUriComponentsBuilder
                     .fromCurrentContextPath()
@@ -89,7 +115,8 @@ public class BookServiceImpl implements BookService {
                     .toUriString();
 
         } catch (Exception e) {
+            log.error("Unable to save image for book ID: {}", id, e);
             throw new RuntimeException("Unable to save image");
         }
-    };
+    }
 }

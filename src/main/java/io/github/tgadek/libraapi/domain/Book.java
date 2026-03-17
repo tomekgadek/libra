@@ -1,6 +1,8 @@
 package io.github.tgadek.libraapi.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -12,6 +14,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 @Entity
 @Table(name = "books")
 @JsonInclude(NON_DEFAULT)
+@JsonDeserialize(builder = Book.Builder.class)
 public class Book {
 
     @Id
@@ -42,7 +45,7 @@ public class Book {
 
     public Book() {}
 
-    public Book(String id, String title, String author, String isbn,
+    private Book(String id, String title, String author, String isbn,
                 String publisher, String publishingYear, String status, String coverUrl) {
         this.id = id;
         this.title = title;
@@ -54,27 +57,91 @@ public class Book {
         this.coverUrl = coverUrl;
     }
 
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class Builder {
+        private String id;
+        private String title;
+        private String author;
+        private String isbn;
+        private String publisher;
+        private String publishingYear;
+        private String status;
+        private String coverUrl;
+
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder title(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public Builder author(String author) {
+            this.author = author;
+            return this;
+        }
+
+        public Builder isbn(String isbn) {
+            this.isbn = isbn;
+            return this;
+        }
+
+        public Builder publisher(String publisher) {
+            this.publisher = publisher;
+            return this;
+        }
+
+        public Builder publishingYear(String publishingYear) {
+            this.publishingYear = publishingYear;
+            return this;
+        }
+
+        public Builder status(String status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder coverUrl(String coverUrl) {
+            this.coverUrl = coverUrl;
+            return this;
+        }
+
+        public Builder fromPrototype(Book book) {
+            this.id = book.getId();
+            this.title = book.getTitle();
+            this.author = book.getAuthor();
+            this.isbn = book.getIsbn();
+            this.publisher = book.getPublisher();
+            this.publishingYear = book.getPublishingYear();
+            this.status = book.getStatus();
+            this.coverUrl = book.getCoverUrl();
+            return this;
+        }
+
+        public Book build() {
+            return new Book(id, title, author, isbn, publisher, publishingYear, status, coverUrl);
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
 
     public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
 
     public String getAuthor() { return author; }
-    public void setAuthor(String author) { this.author = author; }
 
     public String getIsbn() { return isbn; }
-    public void setIsbn(String isbn) { this.isbn = isbn; }
 
     public String getPublisher() { return publisher; }
-    public void setPublisher(String publisher) { this.publisher = publisher; }
 
     public String getPublishingYear() { return publishingYear; }
-    public void setPublishingYear(String publishingYear) { this.publishingYear = publishingYear; }
 
     public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
 
     public String getCoverUrl() { return coverUrl; }
-    public void setCoverUrl(String coverUrl) { this.coverUrl = coverUrl; }
 }
