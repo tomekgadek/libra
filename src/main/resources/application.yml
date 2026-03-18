@@ -30,6 +30,7 @@ spring:
       request-timeout: 3600000
   web:
     resources:
-      add-mappings: false
+      static-locations: classpath:/static/
+      add-mappings: true
 server:
   port: 8080

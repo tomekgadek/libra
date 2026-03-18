@@ -42,7 +42,7 @@ public class BookServiceImpl implements BookService {
                     .isbn("978-0137081073")
                     .publisher("Prentice Hall")
                     .publishingYear("2011")
-                    .status("Available")
+                    .status("Dostępna")
                     .build());
             bookRepo.save(Book.builder()
                     .title("Clean Architecture")
@@ -50,7 +50,7 @@ public class BookServiceImpl implements BookService {
                     .isbn("978-0134494166")
                     .publisher("Prentice Hall")
                     .publishingYear("2017")
-                    .status("Available")
+                    .status("Dostępna")
                     .build());
         }
     }

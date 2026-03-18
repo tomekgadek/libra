@@ -5,3 +5,12 @@
 *.iml
 
 .DS_Store
+
+# Generated React build output
+src/main/resources/static/
+
+# Node
+libra-app/node_modules/
+
+# IDE settings
+.vscode/

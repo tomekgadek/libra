@@ -52,6 +52,12 @@ public class BookResource {
         return ResponseEntity.ok(Map.of("coverUrl", bookService.uploadCover(id, file)));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBook(@PathVariable(value = "id") String id) {
+        bookService.deleteBook(bookService.getBook(id));
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping(path = "/image/{filename}", produces = { IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE })
     public byte[] getCover(@PathVariable("filename") String filename) throws IOException {
         return Files.readAllBytes(Paths.get(PHOTO_DIRECTORY + filename));
