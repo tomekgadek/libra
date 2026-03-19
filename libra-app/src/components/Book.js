@@ -9,7 +9,7 @@ const Book = ({ book }) => {
                 <img src={book.coverUrl ? `${book.coverUrl}?updated_at=${new Date().getTime()}` : '/img/no-cover.png'} alt={book.title} />
             </div>
             <div className='book__details'>
-                <p className='book_title'>{book.title && book.title.substring(0, 30)}</p>
+                <p className='book_title' title={book.title}>{book.title && book.title.length > 30 ? book.title.substring(0, 30) + '...' : book.title}</p>
                 <p className='book_author'>{book.author}</p>
             </div>
         </div>

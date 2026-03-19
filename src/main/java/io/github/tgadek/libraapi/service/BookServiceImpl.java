@@ -2,7 +2,6 @@ package io.github.tgadek.libraapi.service;
 
 import io.github.tgadek.libraapi.domain.Book;
 import io.github.tgadek.libraapi.repo.BookRepo;
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,29 +29,6 @@ public class BookServiceImpl implements BookService {
 
     public BookServiceImpl(BookRepo bookRepo) {
         this.bookRepo = bookRepo;
-    }
-
-    @PostConstruct
-    public void seedData() {
-        if (bookRepo.count() == 0) {
-            log.info("Seeding initial book data using Builder");
-            bookRepo.save(Book.builder()
-                    .title("The Clean Coder")
-                    .author("Robert C. Martin")
-                    .isbn("978-0137081073")
-                    .publisher("Prentice Hall")
-                    .publishingYear("2011")
-                    .status("Dostępna")
-                    .build());
-            bookRepo.save(Book.builder()
-                    .title("Clean Architecture")
-                    .author("Robert C. Martin")
-                    .isbn("978-0134494166")
-                    .publisher("Prentice Hall")
-                    .publishingYear("2017")
-                    .status("Dostępna")
-                    .build());
-        }
     }
 
     @Override
